@@ -5,7 +5,7 @@ from src.models.coin import Coin
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="cryptocurrency tracker")
+    parser = argparse.ArgumentParser(description="Cryptocurrency Tracker")
     parser.add_argument("ticker", help="Ticker of cryptocurrency")
     parser.add_argument("input_file", help="A csv file containing information to process.")
     parser.add_argument("--output", default=None, dest="output_file",
@@ -34,6 +34,6 @@ def process_request(ticker, input_file, output_file, currencies):
     coin.write_to_disk()
 
 if __name__ == "__main__":
-    ticker, input_file, output_file, currencies = parse_args()
+    args = parse_args()
 
-    process_request(ticker, input_file, output_file, currencies)
+    process_request(*args)

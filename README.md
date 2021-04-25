@@ -1,12 +1,14 @@
 
-# crypto-tracker
+# Cryptocurrency Tracker
 
 Generates CSV files for cryptocurrency based on input. Supports any coin traded on Binance, with generic transaction data.
 
 Specific support for:
 1. Cardano (ADA)
 
-and more to come!
+and more to come if required!
+
+In addition, this also supports Binance savings account along with airdrops.
 
 ## Usage
 Before using the script, some credentials need to be created. Users will need to sign up for an account with [Binance](Binance.com) and generate both an API key and a Secret key. Afterwards, create an `.env` file like

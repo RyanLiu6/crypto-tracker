@@ -2,7 +2,7 @@ import csv
 
 from datetime import datetime
 
-from src.api import BinanceAPI
+from src.api import BinanceClient
 from src.config import CARDANO
 from src.models.data import Data, CardanoData
 
@@ -13,7 +13,7 @@ class Coin():
         self.currencies = currencies
         self.processed_data = []
 
-        self.binance = BinanceAPI()
+        self.binance = BinanceClient()
 
         if not output:
             identifier = str(int(datetime.now().timestamp())*1000)

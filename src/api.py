@@ -3,12 +3,13 @@ from datetime import datetime
 
 from dotenv import dotenv_values
 from binance.client import Client
+from pycoingecko import CoinGeckoAPI
 from currency_converter import CurrencyConverter
 
 from src.config import FIAT_USD
 
 
-class BinanceAPI:
+class BinanceClient:
     def __init__(self):
         config = dotenv_values(".env")
 
@@ -73,3 +74,26 @@ class BinanceAPI:
 
     def __calculate_average(self, nums):
         return sum(nums) / len(nums)
+
+
+class GeckoClient:
+    def __init__(self):
+        self.cient = CoinGeckoAPI()
+
+    def get_average_price_for_date(self, ticker, date, currencies=None):
+        """
+        Given a ticker, returns the historical average price for a specific date.
+
+        Args:
+            ticker: string representing cryptocurrency
+            date: string representing datetime in mm/dd/yyyy and PDT or PST
+            currencies: list of currencies to convert to
+
+        Returns:
+            A dictionary containg the average price of cryptocurrency in USD, along with
+            any other currencies specified. Would be in the format of
+            {
+                "USD": some_value,
+                "EUR": some_value (using conversion value from that day)
+            }
+        """
