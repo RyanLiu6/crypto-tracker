@@ -29,7 +29,7 @@ class BinanceClient:
 
         Args:
             ticker: string representing cryptocurrency
-            date: string representing datetime in mm/dd/yyyy and PDT or PST
+            date: datetime object
             currencies: list of currencies to convert to
 
         Returns:
@@ -42,10 +42,9 @@ class BinanceClient:
         """
         symbol = f"{ticker}USDT"
 
-        pacific_start = datetime.strptime(date, "%m/%d/%Y")
-        pacific_end = pacific_start.replace(hour=23, minute=59, second=59, microsecond=999999)
+        pacific_end = date.replace(hour=23, minute=59, second=59, microsecond=999999)
 
-        utc_start = pacific_start.astimezone(utc)
+        utc_start = date.astimezone(utc)
         utc_end = pacific_end.astimezone(utc)
 
         start_timestamp_seconds = int(datetime.timestamp(utc_start))
@@ -94,7 +93,7 @@ class GeckoClient:
 
         Args:
             ticker: string representing cryptocurrency
-            date: string representing datetime in mm/dd/yyyy and PDT or PST
+            date: datetime object
             currencies: list of currencies to convert to
 
         Returns:
@@ -105,9 +104,8 @@ class GeckoClient:
                 "EUR": some_value (using conversion value from that day)
             }
         """
-        pacific_time = datetime.strptime(date, "%m/%d/%Y")
-        utc_time = pacific_time.astimezone(utc)
-        cg_time = pacific_time.strftime("%d-%m-%Y")
+        utc_time = date.astimezone(utc)
+        cg_time = date.strftime("%d-%m-%Y")
 
         coin_id = self.__get_coin_id(ticker=ticker)
         result = self.client.get_coin_history_by_id(id=coin_id, date=cg_time)

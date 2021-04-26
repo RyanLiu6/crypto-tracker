@@ -1,8 +1,8 @@
 import csv
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from src.config import CARDANO
+from src.config import CARDANO, VECHAIN
 from src.models.data import Data, CardanoData
 from src.api import BinanceClient, GeckoClient
 
@@ -29,16 +29,29 @@ class Coin():
             if self.ticker == CARDANO:
                 for row in reader:
                     data = CardanoData(epoch=row[0],
-                                       start_date=row[1],
-                                       end_date=row[2],
+                                       start_date=self.__string_to_datetime(row[1]),
+                                       end_date=self.__string_to_datetime(row[2]),
                                        amount=float(row[3]),
                                        txn_fee=0,
                                        txn_type=row[4])
 
                     self.processed_data.append(data)
+            elif self.ticker == VECHAIN:
+                row = next(reader)
+                start_date = self.__string_to_datetime(row[0])
+                end_date = self.__string_to_datetime(row[1])
+                vtho_per_day = float(row[2])
+
+                for date in self.__datetime_range(start=start_date, end=end_date):
+                    data = Data(date=date,
+                                amount=vtho_per_day,
+                                txn_fee=0,
+                                txn_type="IN")
+
+                    self.processed_data.append(data)
             else:
                 for row in reader:
-                    data = Data(date=row[0],
+                    data = Data(date=self.__string_to_datetime(row[0]),
                                 amount=float(row[1]),
                                 txn_fee=float(row[2]),
                                 txn_type=row[3])
@@ -73,3 +86,20 @@ class Coin():
     """ ============================== Helpers ============================== """
     def __get_fieldnames(self):
         return self.processed_data[0].get_fields(ticker=self.ticker)
+
+    def __string_to_datetime(self, date):
+        """
+        Converts a date string to a datetime object
+
+        Args:
+            date: string representing datetime in mm/dd/yyyy and PDT or PST
+
+        Returns:
+            date_obj: datetime object representing input date
+        """
+        return datetime.strptime(date, "%m/%d/%Y")
+
+    def __datetime_range(self, start=None, end=None):
+        span = end - start
+        for i in range(span.days + 1):
+            yield start + timedelta(days=i)

@@ -9,6 +9,8 @@ class Data():
         self.txn_type = txn_type
         self.price_and_value = {}
 
+        self.date_string = self.__datetime_to_string(self.date)
+
     def get_fields(self, ticker):
         return [DATE, AMOUNT.format(ticker=ticker), TXN_FEE.format(currency=ticker), PRICE_USD, VALUE_USD, TXN_FEE.format(currency=FIAT_USD)]
 
@@ -20,13 +22,16 @@ class Data():
         price = self.price_and_value[FIAT_USD]["price"]
 
         return {
-            DATE: self.date,
+            DATE: self.date_string,
             amount_field: self.amount,
             ticker_fee_field: self.txn_fee,
             PRICE_USD: price,
             VALUE_USD: self.price_and_value[FIAT_USD]["value"],
             usd_fee_field: self.txn_fee * price
         }
+
+    def __datetime_to_string(self, date):
+        return date.strftime("%m/%d/%Y")
 
 
 class CardanoData(Data):
@@ -37,6 +42,9 @@ class CardanoData(Data):
         self.start_date = start_date
         self.end_date = end_date
 
+        self.start_date_string = self.__datetime_to_string(self.start_date)
+        self.end_date_string = self.__datetime_to_string(self.end_date)
+
     def get_fields(self, ticker):
         return [EPOCH, START_DATE, END_DATE, AMOUNT.format(ticker=ticker), PRICE_USD, VALUE_USD]
 
@@ -45,8 +53,8 @@ class CardanoData(Data):
 
         return {
             EPOCH: self.epoch,
-            START_DATE: self.start_date,
-            END_DATE: self.end_date,
+            START_DATE: self.start_date_string,
+            END_DATE: self.end_date_string,
             amount_field: self.amount,
             PRICE_USD: self.price_and_value[FIAT_USD]["price"],
             VALUE_USD: self.price_and_value[FIAT_USD]["value"],
