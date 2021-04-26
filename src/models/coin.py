@@ -63,12 +63,9 @@ class Coin():
             writer.writeheader()
 
             for row in self.processed_data:
-                writer.writerow(row.to_dict())
+                writer.writerow(row.to_dict(ticker=self.ticker))
 
 
     """ ============================== Helpers ============================== """
     def __get_fieldnames(self):
-        if self.ticker == CARDANO:
-            return CardanoData.FIELDS
-        else:
-            return Data.FIELDS
+        return self.processed_data[0].get_fields(ticker=self.ticker)

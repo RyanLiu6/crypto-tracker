@@ -78,7 +78,8 @@ class BinanceClient:
 
 class GeckoClient:
     def __init__(self):
-        self.cient = CoinGeckoAPI()
+        self.client = CoinGeckoAPI()
+        self.converter = CurrencyConverter('http://www.ecb.int/stats/eurofxref/eurofxref-hist.zip')
 
     def get_average_price_for_date(self, ticker, date, currencies=None):
         """
@@ -97,3 +98,16 @@ class GeckoClient:
                 "EUR": some_value (using conversion value from that day)
             }
         """
+        pacific_time = datetime.strptime(date, "%m/%d/%Y")
+        utc_time = pacific_time.astimezone(utc)
+        cg_time = pacific_time.strftime("%d-%m-%Y")
+
+        result = self.client.get_coin_history_by_id(id=ticker, date=cg_time)
+
+        prices = { FIAT_USD: result["market_data"]["current_price"]["usd"] }
+
+        if currencies:
+            for currency in currencies:
+                prices[currency] = result["market_data"]["current_price"][currency.lower()]
+
+        return prices
