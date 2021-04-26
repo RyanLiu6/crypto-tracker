@@ -2,9 +2,9 @@ import csv
 
 from datetime import datetime
 
-from src.api import BinanceClient
 from src.config import CARDANO
 from src.models.data import Data, CardanoData
+from src.api import BinanceClient, GeckoClient
 
 
 class Coin():
@@ -13,6 +13,7 @@ class Coin():
         self.currencies = currencies
         self.processed_data = []
 
+        self.gecko = GeckoClient()
         self.binance = BinanceClient()
 
         if not output:
@@ -45,7 +46,10 @@ class Coin():
                     self.processed_data.append(data)
 
         for row in self.processed_data:
-            prices = self.binance.get_average_price_for_date(ticker=self.ticker, date=row.date, currencies=self.currencies)
+            if self.binance.is_ticker_on_binance(ticker=self.ticker):
+                prices = self.binance.get_average_price_for_date(ticker=self.ticker, date=row.date, currencies=self.currencies)
+            else:
+                prices = self.gecko.get_average_price_for_date(ticker=self.ticker, date=row.date, currencies=self.currencies)
 
             for currency, price in prices.items():
                 row.price_and_value[currency] = {

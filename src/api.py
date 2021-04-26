@@ -16,6 +16,13 @@ class BinanceClient:
         self.client = Client(api_key=config["API_KEY"], api_secret=config["SECRET_KEY"])
         self.converter = CurrencyConverter('http://www.ecb.int/stats/eurofxref/eurofxref-hist.zip')
 
+    def is_ticker_on_binance(self, ticker):
+        symbol = f"{ticker}USDT"
+
+        result = self.client.get_symbol_info(symbol=symbol)
+
+        return True if result else False
+
     def get_average_price_for_date(self, ticker, date, currencies=None):
         """
         Given a ticker, returns the historical average price for a specific date.
@@ -102,7 +109,8 @@ class GeckoClient:
         utc_time = pacific_time.astimezone(utc)
         cg_time = pacific_time.strftime("%d-%m-%Y")
 
-        result = self.client.get_coin_history_by_id(id=ticker, date=cg_time)
+        coin_id = self.__get_coin_id(ticker=ticker)
+        result = self.client.get_coin_history_by_id(id=coin_id, date=cg_time)
 
         prices = { FIAT_USD: result["market_data"]["current_price"]["usd"] }
 
@@ -111,3 +119,12 @@ class GeckoClient:
                 prices[currency] = result["market_data"]["current_price"][currency.lower()]
 
         return prices
+
+    def __get_coin_id(self, ticker):
+        coins = self.client.get_coins_list()
+
+        for coin in coins:
+            if coin["symbol"] == ticker.lower():
+                return coin["id"]
+
+        return None
