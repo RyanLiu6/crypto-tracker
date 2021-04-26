@@ -33,6 +33,7 @@ def process_request(ticker, input_file, output_file, currencies):
     coin.process_data(input_file=input_file)
     coin.write_to_disk()
 
+
 if __name__ == "__main__":
     args = parse_args()
 
