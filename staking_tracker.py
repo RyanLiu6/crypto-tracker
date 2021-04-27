@@ -5,13 +5,13 @@ from src.models.coin import Coin
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Cryptocurrency Tracker")
-    parser.add_argument("ticker", help="Ticker of cryptocurrency")
+    parser = argparse.ArgumentParser(description="Staking Tracker")
+    parser.add_argument("ticker", help="Ticker of cryptocurrency.")
     parser.add_argument("input_file", help="A csv file containing information to process.")
     parser.add_argument("--output", default=None, dest="output_file",
                         help="Output filename. If not specified, will be generated based on ticker and time.")
     parser.add_argument("--currencies", nargs="+", default=None,
-                        help="Additional currencies to process for")
+                        help="Additional currencies to process for.")
 
     args = parser.parse_args()
 

@@ -19,11 +19,11 @@ SECRET_KEY=some_key
 
 The script is relatively simple, and is accessed as:
 ```
-usage: crypto_tracker.py [-h] [--output OUTPUT_FILE]
-                         [--currencies CURRENCIES [CURRENCIES ...]]
-                         ticker input_file
+usage: staking_tracker.py [-h] [--output OUTPUT_FILE]
+                          [--currencies CURRENCIES [CURRENCIES ...]]
+                          ticker input_file
 
-cryptocurrency tracker
+Cryptocurrency Tracker
 
 positional arguments:
   ticker                Ticker of cryptocurrency
