@@ -7,6 +7,10 @@ FIAT_EUR = "EUR"
 CARDANO = "ADA"
 VECHAIN = "VET"
 
+""" ============================== Binance Income Types ============================== """
+BINANCE_AIRDROP = "AIRDROP"
+BINANCE_SAVINGS = "SAVINGS"
+
 """ ============================== Field Names ============================== """
 EPOCH = "Epoch"
 DATE = "Date"

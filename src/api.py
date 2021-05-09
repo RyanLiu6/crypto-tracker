@@ -6,7 +6,8 @@ from binance.client import Client
 from pycoingecko import CoinGeckoAPI
 from currency_converter import CurrencyConverter
 
-from src.config import FIAT_USD
+from src.config import FIAT_USD, BINANCE_AIRDROP, BINANCE_SAVINGS
+from src.utils import calculate_average, get_timestamp_milliseconds
 
 
 class BinanceClient:
@@ -47,30 +48,23 @@ class BinanceClient:
         utc_start = date.astimezone(utc)
         utc_end = pacific_end.astimezone(utc)
 
-        start_timestamp_seconds = int(datetime.timestamp(utc_start))
-        end_timestamp_seconds = int(datetime.timestamp(utc_end))
-
-        start_timestamp = start_timestamp_seconds*1000
-        end_timestamp = end_timestamp_seconds*1000
+        start_timestamp = get_timestamp_milliseconds(utc_start)
+        end_timestamp = get_timestamp_milliseconds(utc_end)
 
         klines = self.client.get_historical_klines(symbol=symbol,
                                                    interval=Client.KLINE_INTERVAL_1HOUR,
                                                    start_str=start_timestamp,
                                                    end_str=end_timestamp)
 
-        # Have to manually process out entries that are past end date because ???
         values = []
         for line in klines:
-            if line[6] > end_timestamp:
-                continue
-            else:
-                # result is array of OHLCV starting with timestamp of open - we will use Open and Close values for best representation
-                open_price = float(line[1])
-                close_price = float(line[4])
-                values.append(self.__calculate_average([open_price, close_price]))
+            # result is array of OHLCV starting with timestamp of open - we will use Open and Close values for best representation
+            open_price = float(line[1])
+            close_price = float(line[4])
+            values.append(calculate_average([open_price, close_price]))
 
         mid_day = utc_start.replace(hour=utc_start.hour + 12)
-        prices = { FIAT_USD: self.__calculate_average(values) }
+        prices = { FIAT_USD: calculate_average(values) }
 
         if currencies:
             for currency in currencies:
@@ -78,8 +72,46 @@ class BinanceClient:
 
         return prices
 
-    def __calculate_average(self, nums):
-        return sum(nums) / len(nums)
+    def get_saving_data(self, ticker, start_date):
+        """
+        Gets savings data for specific ticker for a date range.
+
+        Args:
+            ticker: string representing cryptocurrency
+            start_date: datetime object
+        """
+        end_date = datetime.now()
+
+        request_params = {
+            "lendingType": "DAILY",
+            "asset": ticker,
+            "startTime": get_timestamp_milliseconds(start_date),
+            "endTime": get_timestamp_milliseconds(end_date)
+        }
+
+        result = self.client.get_lending_interest_history(**request_params)
+
+        for item in result:
+            print(item)
+            print(datetime.fromtimestamp(item["time"]/1000))
+            print("==========================================")
+
+    def get_dividend_data(self, ticker, start_date):
+        end_date = datetime.now()
+
+        # request_params = {
+        #     # "asset": ticker,
+        #     "startTime": get_timestamp_milliseconds(start_date),
+        #     "endTime": get_timestamp_milliseconds(end_date)
+        # }
+
+        result = self.client.get_asset_dividend_history()
+
+        print(result)
+        for item in result:
+            print(item)
+            # print(datetime.fromtimestamp(item["time"]/1000))
+            print("==========================================")
 
 
 class GeckoClient:
