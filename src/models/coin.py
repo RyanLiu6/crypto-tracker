@@ -4,8 +4,8 @@ from datetime import datetime
 
 from src.api import BinanceClient, GeckoClient
 from src.models.data import Data, CardanoData, SavingsData
-from src.config import CARDANO, VECHAIN, BINANCE_AIRDROP, BINANCE_SAVINGS
 from src.utils import string_to_datetime, datetime_range, timestamp_to_datetime
+from src.config import CARDANO, VECHAIN, VETHOR, BINANCE_AIRDROP, BINANCE_SAVINGS
 
 
 class Coin():
@@ -37,7 +37,7 @@ class Coin():
                                        txn_type=row[4])
 
                     self.processed_data.append(data)
-            elif self.ticker == VECHAIN:
+            elif self.ticker == VETHOR:
                 row = next(reader)
                 start_date = string_to_datetime(row[0])
                 end_date = string_to_datetime(row[1])

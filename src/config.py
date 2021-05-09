@@ -6,6 +6,7 @@ FIAT_EUR = "EUR"
 """ ============================== Cryptos ============================== """
 CARDANO = "ADA"
 VECHAIN = "VET"
+VETHOR = "VTHO"
 
 """ ============================== Binance Income Types ============================== """
 BINANCE_AIRDROP = "AIRDROP"
