@@ -53,3 +53,23 @@ class CardanoData(Data):
             PRICE_USD: self.price_and_value[FIAT_USD]["price"],
             VALUE_USD: self.price_and_value[FIAT_USD]["value"],
         }
+
+
+class SavingsData(Data):
+    def __init__(self, date, amount):
+        super().__init__(date=date, amount=amount, txn_fee=0, txn_type="IN")
+
+    def get_fields(self, ticker):
+        return [DATE, AMOUNT.format(ticker=ticker), PRICE_USD, VALUE_USD]
+
+    def to_dict(self, ticker):
+        amount_field = AMOUNT.format(ticker=ticker)
+
+        price = self.price_and_value[FIAT_USD]["price"]
+
+        return {
+            DATE: datetime_to_string(self.date),
+            amount_field: self.amount,
+            PRICE_USD: price,
+            VALUE_USD: self.price_and_value[FIAT_USD]["value"]
+        }

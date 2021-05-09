@@ -2,10 +2,10 @@ import csv
 
 from datetime import datetime
 
-from src.models.data import Data, CardanoData
 from src.api import BinanceClient, GeckoClient
-from src.utils import string_to_datetime, datetime_range
+from src.models.data import Data, CardanoData, SavingsData
 from src.config import CARDANO, VECHAIN, BINANCE_AIRDROP, BINANCE_SAVINGS
+from src.utils import string_to_datetime, datetime_range, timestamp_to_datetime
 
 
 class Coin():
@@ -75,9 +75,23 @@ class Coin():
         start_date = string_to_datetime(start_date)
 
         if income_type == BINANCE_SAVINGS:
-            self.binance.get_saving_data(ticker=self.ticker, start_date=start_date)
+            results = self.binance.get_saving_data(ticker=self.ticker, start_date=start_date)
+            for res in results:
+                data = SavingsData(amount=float(res["interest"]),
+                                   date=timestamp_to_datetime(res["time"]))
+
+                self.processed_data.append(data)
         elif income_type == BINANCE_AIRDROP:
-            self.binance.get_dividend_data(ticker=self.ticker, start_date=start_date)
+            results = self.binance.get_dividend_data(ticker=self.ticker, start_date=start_date)
+
+        for row in self.processed_data:
+            prices = self.binance.get_average_price_for_date(ticker=self.ticker, date=row.date, currencies=self.currencies)
+
+            for currency, price in prices.items():
+                row.price_and_value[currency] = {
+                    "price": price,
+                    "value": row.amount * price
+                }
 
     def write_to_disk(self):
         if not self.processed_data:

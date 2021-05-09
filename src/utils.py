@@ -27,6 +27,24 @@ def datetime_to_string(date_object):
     return date_object.strftime("%m/%d/%Y")
 
 
+def timestamp_to_datetime(timestamp):
+    """
+    Custom conversion of timestamp in seconds to datetime object.
+
+    Specifically, this sets everything to be 00:00:00.
+
+    Args:
+        timestamp: timestamp in seconds
+
+    Returns:
+        datetime object representing timestamp such that we are at 00:00:00
+    """
+    date = datetime.fromtimestamp(timestamp // 1000)
+    date = date.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    return date
+
+
 def datetime_range(start=None, end=None):
     """
     Yields a range of datetime iterable for processing a range of dates.

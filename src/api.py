@@ -1,5 +1,7 @@
+import math
+
 from pytz import utc
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from dotenv import dotenv_values
 from binance.client import Client
@@ -76,25 +78,40 @@ class BinanceClient:
         """
         Gets savings data for specific ticker for a date range.
 
+        Since API can only return 100 results at max, assume that each day has one savings transaction.
+        Thus, we make X amount of API calls, where X = ((end_date - start_date) / 100 ) + 1
+
         Args:
             ticker: string representing cryptocurrency
             start_date: datetime object
         """
         end_date = datetime.now()
+        days_in_between = (end_date - start_date).days + 1
+        iterations = math.ceil(days_in_between / 100)
 
-        request_params = {
-            "lendingType": "DAILY",
-            "asset": ticker,
-            "startTime": get_timestamp_milliseconds(start_date),
-            "endTime": get_timestamp_milliseconds(end_date)
-        }
+        print(iterations)
 
-        result = self.client.get_lending_interest_history(**request_params)
+        results = []
+        for i in range(iterations):
+            request_start_date = start_date + timedelta(days=i*100)
+            request_end_date = request_start_date + timedelta(days=100)
 
-        for item in result:
-            print(item)
-            print(datetime.fromtimestamp(item["time"]/1000))
-            print("==========================================")
+            request_params = {
+                "lendingType": "DAILY",
+                "asset": ticker,
+                "size": 100,
+                "startTime": get_timestamp_milliseconds(request_start_date),
+                "endTime": get_timestamp_milliseconds(request_end_date)
+            }
+
+            sub_results = self.client.get_lending_interest_history(**request_params)
+            results.extend(sub_results)
+
+        results.sort(key=lambda x: x["time"])
+
+        print(results[0])
+
+        return results
 
     def get_dividend_data(self, ticker, start_date):
         end_date = datetime.now()
