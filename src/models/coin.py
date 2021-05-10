@@ -83,6 +83,10 @@ class Coin():
                 self.processed_data.append(data)
         elif income_type == BINANCE_AIRDROP:
             results = self.binance.get_dividend_data(ticker=self.ticker, start_date=start_date)
+            for res in results:
+                data = SavingsData(amount=float(res["amount"]),
+                                   date=timestamp_to_datetime(res["divTime"]))
+                self.processed_data.append(data)
 
         for row in self.processed_data:
             prices = self.binance.get_average_price_for_date(ticker=self.ticker, date=row.date, currencies=self.currencies)

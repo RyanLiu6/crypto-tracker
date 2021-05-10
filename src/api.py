@@ -89,8 +89,6 @@ class BinanceClient:
         days_in_between = (end_date - start_date).days + 1
         iterations = math.ceil(days_in_between / 100)
 
-        print(iterations)
-
         results = []
         for i in range(iterations):
             request_start_date = start_date + timedelta(days=i*100)
@@ -109,27 +107,41 @@ class BinanceClient:
 
         results.sort(key=lambda x: x["time"])
 
-        print(results[0])
-
         return results
 
     def get_dividend_data(self, ticker, start_date):
+        """
+        Gets dividends data for specific ticker for a date range.
+
+        Since API can only return 500 results at max, assume that each day has one savings transaction.
+        Thus, we make X amount of API calls, where X = ((end_date - start_date) / 500 ) + 1
+
+        Args:
+            ticker: string representing cryptocurrency
+            start_date: datetime object
+        """
         end_date = datetime.now()
+        days_in_between = (end_date - start_date).days + 1
+        iterations = math.ceil(days_in_between / 100)
 
-        # request_params = {
-        #     # "asset": ticker,
-        #     "startTime": get_timestamp_milliseconds(start_date),
-        #     "endTime": get_timestamp_milliseconds(end_date)
-        # }
+        results = []
+        for i in range(iterations):
+            request_start_date = start_date + timedelta(days=i*500)
+            request_end_date = request_start_date + timedelta(days=500)
 
-        result = self.client.get_asset_dividend_history()
+            request_params = {
+                "asset": ticker,
+                "limit": 500,
+                "startTime": get_timestamp_milliseconds(start_date),
+                "endTime": get_timestamp_milliseconds(end_date)
+            }
 
-        print(result)
-        for item in result:
-            print(item)
-            # print(datetime.fromtimestamp(item["time"]/1000))
-            print("==========================================")
+            sub_results = self.client.get_asset_dividend_history(**request_params)
+            results.extend(sub_results["rows"])
 
+        results.sort(key=lambda x: x["divTime"])
+
+        return results
 
 class GeckoClient:
     def __init__(self):
