@@ -143,6 +143,49 @@ class BinanceClient:
 
         return results
 
+    def __income_helper(self, ticker, start_date, limit, request_dict, savings=True):
+        """
+        Helper function for both savings and dividends as they are
+        almost the same.
+
+        Args:
+            ticker: string representing cryptocurrency
+            start_date: datetime object
+            limit: Limit of each API call
+            request_dict: dictionary containing specific request data
+
+        Returns:
+            List of savings or dividend transactions
+        """
+        end_date = datetime.now()
+        days_in_between = (end_date - start_date).days + 1
+        iterations = math.ceil(days_in_between / limit)
+
+        results = []
+        for i in range(iterations):
+            request_start_date = start_date + timedelta(days=i*limit)
+            request_end_date = request_start_date + timedelta(days=limit)
+
+            request_dict["startTime"] = get_timestamp_milliseconds(start_date)
+            request_dict["endTime"] = get_timestamp_milliseconds(end_date)
+
+            if savings:
+                sub_results = self.client.get_lending_interest_history(**request_dict)
+            else:
+                sub_results = self.client.get_asset_dividend_history(**request_dict)["rows"]
+
+            results.extend(sub_results)
+
+        if savings:
+            sort_key = "time"
+        else:
+            sort_key = "divTime"
+
+        results.sort(key=lambda x: x[sort_key])
+
+        return results
+
+
 class GeckoClient:
     def __init__(self):
         self.client = CoinGeckoAPI()
