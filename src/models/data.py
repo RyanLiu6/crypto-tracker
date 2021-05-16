@@ -4,11 +4,10 @@ from src.config import (EPOCH, DATE, START_DATE, END_DATE, AMOUNT,
 
 
 class Data():
-    def __init__(self, date, amount, txn_fee, txn_type):
+    def __init__(self, date, amount, txn_fee):
         self.date = date
         self.amount = amount
         self.txn_fee = txn_fee
-        self.txn_type = txn_type
         self.price_and_value = {}
 
     def get_fields(self, ticker):
@@ -32,8 +31,8 @@ class Data():
 
 
 class CardanoData(Data):
-    def __init__(self, epoch, start_date, end_date, amount, txn_fee, txn_type):
-        super().__init__(date=end_date, amount=amount, txn_fee=txn_fee, txn_type=txn_type)
+    def __init__(self, epoch, start_date, end_date, amount, txn_fee):
+        super().__init__(date=end_date, amount=amount, txn_fee=txn_fee)
 
         self.epoch = epoch
         self.start_date = start_date
@@ -57,7 +56,7 @@ class CardanoData(Data):
 
 class SavingsData(Data):
     def __init__(self, date, amount):
-        super().__init__(date=date, amount=amount, txn_fee=0, txn_type="IN")
+        super().__init__(date=date, amount=amount, txn_fee=0)
 
     def get_fields(self, ticker):
         return [DATE, AMOUNT.format(ticker=ticker), PRICE_USD, VALUE_USD]

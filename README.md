@@ -39,11 +39,10 @@ optional arguments:
 
 The input file is a csv of the following format:
 ```
-data: comma separated values of (date, amount, txn_fee, txn_type) where:
+data: comma separated values of (date, amount, txn_fee) where:
 - date: mm/dd/yyyy
 - amount: float
 - txn_fee: float
-- txn_type: IN or OUT
 ```
 
 If the ticker is ADA for Cardano, the will instead expect:
@@ -53,7 +52,6 @@ If the ticker is ADA for Cardano, the will instead expect:
 - end_date: mm/dd/yyyy
 - amount: float
 - txn_fee: float
-- txn_type: IN or OUT
 ```
 
 ## Examples

@@ -33,8 +33,7 @@ class Coin():
                                        start_date=string_to_datetime(row[1]),
                                        end_date=string_to_datetime(row[2]),
                                        amount=float(row[3]),
-                                       txn_fee=0,
-                                       txn_type=row[4])
+                                       txn_fee=0)
 
                     self.processed_data.append(data)
             elif self.ticker == VETHOR:
@@ -46,16 +45,14 @@ class Coin():
                 for date in datetime_range(start=start_date, end=end_date):
                     data = Data(date=date,
                                 amount=vtho_per_day,
-                                txn_fee=0,
-                                txn_type="IN")
+                                txn_fee=0)
 
                     self.processed_data.append(data)
             else:
                 for row in reader:
                     data = Data(date=string_to_datetime(row[0]),
                                 amount=float(row[1]),
-                                txn_fee=float(row[2]),
-                                txn_type=row[3])
+                                txn_fee=float(row[2]))
 
                     self.processed_data.append(data)
 
@@ -108,6 +105,8 @@ class Coin():
 
             for row in self.processed_data:
                 writer.writerow(row.to_dict(ticker=self.ticker))
+
+        print(f"CSV File written to {self.output}")
 
 
     """ ============================== Helpers ============================== """
