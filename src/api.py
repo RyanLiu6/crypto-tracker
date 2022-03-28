@@ -74,25 +74,32 @@ class BinanceClient:
 
         return prices
 
-    def get_saving_data(self, ticker, start_date):
+    def get_saving_data(self, ticker, start_date, end_date=datetime.now()):
         """
         Gets savings data for specific ticker for a date range.
+
+        From the API: The time between startTime and endTime cannot be longer than 30 days.
+        Therefore, we
 
         Since API can only return 100 results at max, assume that each day has one savings transaction.
         Thus, we make X amount of API calls, where X = ((end_date - start_date) / 100 ) + 1
 
+        From the API: The time between startTime and endTime cannot be longer than 30 days
+
         Args:
             ticker: string representing cryptocurrency
             start_date: datetime object
+            end_date: datetime object. Defaults to datetime.now().
         """
-        end_date = datetime.now()
         days_in_between = (end_date - start_date).days + 1
-        iterations = math.ceil(days_in_between / 100)
+        iterations = math.ceil(days_in_between / 30)
 
         results = []
         for i in range(iterations):
-            request_start_date = start_date + timedelta(days=i*100)
-            request_end_date = request_start_date + timedelta(days=100)
+            request_start_date = start_date + timedelta(days=i*30)
+            request_end_date = request_start_date + timedelta(days=30)
+
+            print(request_start_date, request_end_date)
 
             request_params = {
                 "lendingType": "DAILY",
@@ -109,7 +116,7 @@ class BinanceClient:
 
         return results
 
-    def get_dividend_data(self, ticker, start_date):
+    def get_dividend_data(self, ticker, start_date, end_date=datetime.now()):
         """
         Gets dividends data for specific ticker for a date range.
 
@@ -119,8 +126,8 @@ class BinanceClient:
         Args:
             ticker: string representing cryptocurrency
             start_date: datetime object
+            end_date: datetime object. Defaults to datetime.now()
         """
-        end_date = datetime.now()
         days_in_between = (end_date - start_date).days + 1
         iterations = math.ceil(days_in_between / 100)
 
@@ -132,8 +139,8 @@ class BinanceClient:
             request_params = {
                 "asset": ticker,
                 "limit": 500,
-                "startTime": get_timestamp_milliseconds(start_date),
-                "endTime": get_timestamp_milliseconds(end_date)
+                "startTime": get_timestamp_milliseconds(request_start_date),
+                "endTime": get_timestamp_milliseconds(request_end_date)
             }
 
             sub_results = self.client.get_asset_dividend_history(**request_params)

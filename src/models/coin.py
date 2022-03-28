@@ -68,18 +68,19 @@ class Coin():
                     "value": row.amount * price
                 }
 
-    def process_income(self, income_type, start_date):
+    def process_income(self, income_type, start_date, end_date):
         start_date = string_to_datetime(start_date)
+        end_date = string_to_datetime(end_date)
 
         if income_type == BINANCE_SAVINGS:
-            results = self.binance.get_saving_data(ticker=self.ticker, start_date=start_date)
+            results = self.binance.get_saving_data(ticker=self.ticker, start_date=start_date, end_date=end_date)
             for res in results:
                 data = SavingsData(amount=float(res["interest"]),
                                    date=timestamp_to_datetime(res["time"]))
 
                 self.processed_data.append(data)
         elif income_type == BINANCE_AIRDROP:
-            results = self.binance.get_dividend_data(ticker=self.ticker, start_date=start_date)
+            results = self.binance.get_dividend_data(ticker=self.ticker, start_date=start_date, end_date=end_date)
             for res in results:
                 data = SavingsData(amount=float(res["amount"]),
                                    date=timestamp_to_datetime(res["divTime"]))
