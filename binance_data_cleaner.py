@@ -31,7 +31,7 @@ def clean_binance_csv(binance_data: str) -> None:
     """
     operations_to_keep = [
         "Deposit",
-        "Withdraw"
+        "Withdraw",
         "Buy",
         "Sell",
         "Fee",
@@ -48,7 +48,7 @@ def clean_binance_csv(binance_data: str) -> None:
         field_names = reader.fieldnames
 
         for row in reader:
-            operation = row["Operation"]
+            operation = row["Operation"].strip()
 
             # Direct match
             if operation in operations_to_keep:
