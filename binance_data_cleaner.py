@@ -3,8 +3,6 @@
 import csv
 import click
 
-from typing import Dict
-
 from src.utils import write_csv_to_file
 
 

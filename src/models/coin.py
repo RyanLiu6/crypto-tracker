@@ -9,7 +9,7 @@ from src.config import CARDANO, VECHAIN, VETHOR, BINANCE_AIRDROP, BINANCE_SAVING
 
 
 class Coin():
-    def __init__(self, ticker, currencies, output=None):
+    def __init__(self, ticker, currencies, output_filename=None):
         self.ticker = ticker
         self.currencies = currencies
         self.processed_data = []
@@ -17,14 +17,14 @@ class Coin():
         self.gecko = GeckoClient()
         self.binance = BinanceClient()
 
-        if not output:
+        if not output_filename:
             identifier = str(int(datetime.now().timestamp())*1000)
-            self.output = f"{self.ticker}_{identifier}.csv"
+            self.output_filename = f"{self.ticker}_{identifier}.csv"
         else:
-            self.output = output
+            self.output_filename = output_filename
 
-    def process_data(self, input_file):
-        with open(input_file, newline="") as read_file:
+    def process_data(self, input_filename):
+        with open(input_filename, newline="") as read_file:
             reader = csv.reader(read_file, skipinitialspace=True, delimiter=",", quotechar="|")
 
             if self.ticker == CARDANO:
@@ -99,7 +99,7 @@ class Coin():
         if not self.processed_data:
             raise ValueError("Data not yet processed!")
 
-        with open(self.output, "w", newline="") as write_file:
+        with open(self.output_filename, "w", newline="") as write_file:
             writer = csv.DictWriter(write_file, fieldnames=self.__get_fieldnames())
 
             writer.writeheader()
@@ -107,7 +107,7 @@ class Coin():
             for row in self.processed_data:
                 writer.writerow(row.to_dict(ticker=self.ticker))
 
-        print(f"CSV File written to {self.output}")
+        print(f"CSV File written to {self.output_filename}")
 
 
     """ ============================== Helpers ============================== """

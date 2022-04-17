@@ -17,27 +17,33 @@ API_KEY=some_key
 SECRET_KEY=some_key
 ```
 
-The script is relatively simple, and is accessed as:
+The script is two-tiered, with the base script being `crypto_rewards_tracker.py`
 ```
-usage: staking_tracker.py [-h] [--output OUTPUT_FILE]
-                          [--currencies CURRENCIES [CURRENCIES ...]]
-                          ticker input_file
+$ python crypto_rewards_tracker.py --help
+Usage: crypto_rewards_tracker.py [OPTIONS] COMMAND [ARGS]...
 
-Cryptocurrency Tracker
+  Cryptocurrency Rewards Tracker entrypoint.
 
-positional arguments:
-  ticker                Ticker of cryptocurrency
-  input_file            A csv file containing information to process.
+  Args:     output_filename (str): Output file name, if not specified, will be
+  generated     currencies (Tuple[str]): Tuple of additional currencies to
+  process for
 
-optional arguments:
-  -h, --help            show this help message and exit
-  --output OUTPUT_FILE  Output filename. If not specified, will be generated
-                        based on ticker and time.
-  --currencies CURRENCIES [CURRENCIES ...]
-                        Additional currencies to process for
+Options:
+  --output PATH      Output filename, will be generated if not specified
+  --currencies TEXT  Additional currencies to process for
+  --help             Show this message and exit.
+
+Commands:
+  track-binance-rewards  Tracks Binance Airdrops and Savings.
+  track-generic-rewards  Tracks generic crypto rewards from staking.
 ```
 
-The input file is a csv of the following format:
+The specific commands for different types of rewards are `track-binance-rewards` and `track-generic-rewards`. To use, it will be something like
+```
+$ python crypto_rewards_tracker.py track-binance-rewards --help
+```
+
+If requiring an input file, the file is a csv of the following format:
 ```
 data: comma separated values of (date, amount, txn_fee) where:
 - date: mm/dd/yyyy
