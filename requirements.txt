@@ -1,3 +1,4 @@
+click>=8.1.2
 CurrencyConverter>=0.16
 python-binance>=1.0.7
 pycoingecko>=2.0.0
